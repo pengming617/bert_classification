@@ -276,7 +276,7 @@ class SimProcessor(DataProcessor):
         guid = 'train-%d' % index
         text_a = tokenization.convert_to_unicode(str(dev[0]))
         # text_b = tokenization.convert_to_unicode(str(dev[1]))
-        label = str(dev[2])
+        label = str(dev[1])
         dev_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
     return dev_data
 
@@ -288,7 +288,7 @@ class SimProcessor(DataProcessor):
         guid = 'test-%d' % index
         text_a = tokenization.convert_to_unicode(str(test[0]))
         # text_b = tokenization.convert_to_unicode(str(test[1]))
-        label = str(test[2])
+        label = str(test[1])
         test_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
     return test_data
 

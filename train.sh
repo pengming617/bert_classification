@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 python3.6 run_classifier.py \
   --data_dir=data \
   --task_name=sim \

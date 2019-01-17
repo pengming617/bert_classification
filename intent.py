@@ -1,3 +1,6 @@
 from predict import predicts
 
-predicts(['电话医生有没有使用期限','能不能保意外尊享惠康'])
+sentences = ['大宗减持情况查询', '今天大盘怎么样']
+for sentence in sentences:
+    dic = predicts([sentence])
+    print(dic)

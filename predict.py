@@ -714,6 +714,7 @@ def predicts(text_data):
     result = estimator.predict(input_fn=predict_input_fn)
 
     output_predict_file = os.path.join(FLAGS.output_dir, "test_results.tsv")
+    res_dic = {}
     with tf.gfile.GFile(output_predict_file, "w") as writer:
       num_written_lines = 0
       tf.logging.info("***** Predict results *****")
@@ -730,9 +731,9 @@ def predicts(text_data):
         for i in range(len(probabilities)):
             dicts[label_list[i]] = probabilities[i]
         print(dicts)
+        dicts = sorted(dicts.items(), key=lambda x: x[1], reverse=True)
+        res_dic[text_a] = [dicts[0][0], dicts[0][1]]
     assert num_written_lines == num_actual_predict_examples
+    return res_dic
 
-
-# if __name__ == "__main__":
-#   tf.app.run()
 

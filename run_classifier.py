@@ -293,7 +293,7 @@ class SimProcessor(DataProcessor):
     return test_data
 
   def get_labels(self):
-    return ['新股申购', '查看研报', 'other', '买入股票', '卖出股票', '增减持', '市场温度', '查看大盘', '个股诊断', '转人工', '大盘行情', '查看解禁', '个股详情']
+    return ['0', '1']
 
 class MnliProcessor(DataProcessor):
   """Processor for the MultiNLI data set (GLUE version)."""

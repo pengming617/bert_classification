@@ -256,28 +256,59 @@ class XnliProcessor(DataProcessor):
 class SimProcessor(DataProcessor):
   """Processor for the Sim task"""
 
+  # read csv
+  # def get_train_examples(self, data_dir):
+  #   file_path = os.path.join(data_dir, 'train.csv')
+  #   train_df = pd.read_csv(file_path, encoding='utf-8')
+  #   train_data = []
+  #   for index, train in enumerate(train_df.values):
+  #       guid = 'train-%d' % index
+  #       text_a = tokenization.convert_to_unicode(str(train[0]))
+  #       # text_b = tokenization.convert_to_unicode(str(train[1]))
+  #       label = str(train[1])
+  #       train_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+  #   return train_data
+
+  # read txt
   def get_train_examples(self, data_dir):
-    file_path = os.path.join(data_dir, 'train.csv')
-    train_df = pd.read_csv(file_path, encoding='utf-8')
+    file_path = os.path.join(data_dir, 'train_sentiment.txt')
+    f = open(file_path, 'r')
     train_data = []
-    for index, train in enumerate(train_df.values):
+    index = 0
+    for line in f.readlines():
         guid = 'train-%d' % index
-        text_a = tokenization.convert_to_unicode(str(train[0]))
-        # text_b = tokenization.convert_to_unicode(str(train[1]))
-        label = str(train[1])
+        line = line.replace("\n", "").split("\t")
+        text_a = tokenization.convert_to_unicode(str(line[1]))
+        label = str(line[2])
         train_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+        index += 1
     return train_data
 
+  # csv
+  # def get_dev_examples(self, data_dir):
+  #   file_path = os.path.join(data_dir, 'dev.csv')
+  #   dev_df = pd.read_csv(file_path, encoding='utf-8')
+  #   dev_data = []
+  #   for index, dev in enumerate(dev_df.values):
+  #       guid = 'dev-%d' % index
+  #       text_a = tokenization.convert_to_unicode(str(dev[0]))
+  #       # text_b = tokenization.convert_to_unicode(str(dev[1]))
+  #       label = str(dev[1])
+  #       dev_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+  #   return dev_data
+
   def get_dev_examples(self, data_dir):
-    file_path = os.path.join(data_dir, 'dev.csv')
-    dev_df = pd.read_csv(file_path, encoding='utf-8')
+    file_path = os.path.join(data_dir, 'test_sentiment.txt')
+    f = open(file_path, 'r')
     dev_data = []
-    for index, dev in enumerate(dev_df.values):
-        guid = 'train-%d' % index
-        text_a = tokenization.convert_to_unicode(str(dev[0]))
-        # text_b = tokenization.convert_to_unicode(str(dev[1]))
-        label = str(dev[1])
+    index = 0
+    for line in f.readlines():
+        guid = 'dev-%d' % index
+        line = line.replace("\n", "").split("\t")
+        text_a = tokenization.convert_to_unicode(str(line[1]))
+        label = str(line[2])
         dev_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+        index += 1
     return dev_data
 
   def get_test_examples(self, data_dir):
@@ -293,7 +324,7 @@ class SimProcessor(DataProcessor):
     return test_data
 
   def get_labels(self):
-    return ['新股申购', '查看研报', 'other', '买入股票', '卖出股票', '增减持', '市场温度', '查看大盘', '个股诊断', '转人工', '大盘行情', '查看解禁', '个股详情']
+    return ['0', '1', '2']
 
 class MnliProcessor(DataProcessor):
   """Processor for the MultiNLI data set (GLUE version)."""

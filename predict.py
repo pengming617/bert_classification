@@ -63,7 +63,7 @@ flags.DEFINE_bool(
     "models and False for cased models.")
 
 flags.DEFINE_integer(
-    "max_seq_length", 20,
+    "max_seq_length", 70,
     "The maximum total input sequence length after WordPiece tokenization. "
     "Sequences longer than this will be truncated, and sequences shorter "
     "than this will be padded.")
@@ -226,7 +226,7 @@ class SimProcessor(DataProcessor):
     return test_data
 
   def get_labels(self):
-    return ['新股申购', '查看研报', 'other', '买入股票', '卖出股票', '增减持', '市场温度', '查看大盘', '个股诊断', '转人工', '大盘行情', '查看解禁', '个股详情']
+    return ['0', '1', '2']
 
 def convert_single_example(ex_index, example, label_list, max_seq_length,
                            tokenizer):

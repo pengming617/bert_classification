@@ -16,3 +16,5 @@ data文件夹中为训练语料，验证语料，测试语料
 参数说明：
 max_seq_length  sentence的最大长度（字）
 train_batch_size  batch_size的大小
+
+eval_accuracy = 0.89801764

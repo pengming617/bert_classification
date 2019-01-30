@@ -9,7 +9,7 @@ python3.6 run_classifier.py \
   --do_train=true \
   --do_eval=true \
   --init_checkpoint=chinese_L-12_H-768_A-12/bert_model.ckpt \
-  --max_seq_length=20 \
+  --max_seq_length=70 \
   --train_batch_size=32 \
   --learning_rate=5e-5 \
   --num_train_epochs=3.0

@@ -326,6 +326,7 @@ class SimProcessor(DataProcessor):
   def get_labels(self):
     return ['0', '1', '2']
 
+
 class MnliProcessor(DataProcessor):
   """Processor for the MultiNLI data set (GLUE version)."""
 

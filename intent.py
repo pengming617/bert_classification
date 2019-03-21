@@ -1,6 +1,7 @@
-from predict import predicts
+from single_predict import predicts
 
-sentences = ['键盘按键设计太紧密,不好操控。反映慢。', '离长途大巴车站很近,酒店环境也算不错,下次还是首选.']
-for sentence in sentences:
-    dic = predicts([sentence])
-    print(dic)
+
+sentences = ['交通方便；环境很好；服务态度很好 房间较小上',
+             '太差了，空调的噪音很大，设施也不齐全，携程怎么会选择这样的合作伙伴']
+dic = predicts(sentences)
+print(dic)

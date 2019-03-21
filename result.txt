@@ -1,0 +1,8 @@
+INFO:tensorflow:***** Eval results *****
+INFO:tensorflow:  eval_accuracy = 0.938333
+INFO:tensorflow:  eval_loss = 0.265773
+INFO:tensorflow:  global_step = 1800
+INFO:tensorflow:  loss = 0.265773
+
+
+test_accuracy = 0.9458333333

@@ -31,7 +31,7 @@ flags = tf.flags
 
 FLAGS = flags.FLAGS
 
-## Required parameters
+# Required parameters
 flags.DEFINE_string(
     "data_dir", 'data',
     "The input data dir. Should contain the .tsv files (or other data files) "
@@ -63,7 +63,7 @@ flags.DEFINE_bool(
     "models and False for cased models.")
 
 flags.DEFINE_integer(
-    "max_seq_length", 70,
+    "max_seq_length", 300,
     "The maximum total input sequence length after WordPiece tokenization. "
     "Sequences longer than this will be truncated, and sequences shorter "
     "than this will be padded.")
@@ -76,11 +76,11 @@ flags.DEFINE_bool(
     "do_predict", True,
     "Whether to run the model in inference mode on the test set.")
 
-flags.DEFINE_integer("train_batch_size", 32, "Total batch size for training.")
+flags.DEFINE_integer("train_batch_size", 16, "Total batch size for training.")
 
 flags.DEFINE_integer("eval_batch_size", 8, "Total batch size for eval.")
 
-flags.DEFINE_integer("predict_batch_size", 8, "Total batch size for predict.")
+flags.DEFINE_integer("predict_batch_size", 16, "Total batch size for predict.")
 
 flags.DEFINE_float("learning_rate", 5e-5, "The initial learning rate for Adam.")
 
@@ -214,19 +214,22 @@ class SimProcessor(DataProcessor):
       raise NotImplementedError()
 
   def get_test_examples(self, data_dir):
-    file_path = os.path.join(data_dir, 'test.csv')
-    test_df = pd.read_csv(file_path, encoding='utf-8')
-    test_data = []
-    for index, test in enumerate(test_df.values):
-        guid = 'test-%d' % index
-        text_a = tokenization.convert_to_unicode(str(test[0]))
-        # text_b = tokenization.convert_to_unicode(str(test[1]))
-        # label = str(test[2])
-        test_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=None))
-    return test_data
+      """See base class."""
+      lines = self._read_tsv(os.path.join(data_dir, "test.tsv"))
+      test_data = []
+      for (i, line) in enumerate(lines):
+          if i == 0:
+              continue
+          guid = "test-%d" % (i)
+          text_a = tokenization.convert_to_unicode(line[1])
+          # text_b = tokenization.convert_to_unicode(line[7])
+          label = tokenization.convert_to_unicode(line[0])
+          test_data.append(
+              InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+      return test_data
 
   def get_labels(self):
-    return ['0', '1', '2']
+    return ['0', '1']
 
 def convert_single_example(ex_index, example, label_list, max_seq_length,
                            tokenizer):
@@ -713,26 +716,19 @@ def predicts(text_data):
 
     result = estimator.predict(input_fn=predict_input_fn)
 
-    output_predict_file = os.path.join(FLAGS.output_dir, "test_results.tsv")
     res_dic = {}
-    with tf.gfile.GFile(output_predict_file, "w") as writer:
-      num_written_lines = 0
-      tf.logging.info("***** Predict results *****")
-      for (i, prediction) in enumerate(result):
+    num_written_lines = 0
+    tf.logging.info("***** Predict results *****")
+    for (k, prediction) in enumerate(result):
         probabilities = prediction["probabilities"]
-        if i >= num_actual_predict_examples:
+        if k >= num_actual_predict_examples:
           break
-        output_line = "\t".join(
-            str(class_probability)
-            for class_probability in probabilities) + "\n"
-        writer.write(output_line)
         num_written_lines += 1
         dicts = {}
         for i in range(len(probabilities)):
             dicts[label_list[i]] = probabilities[i]
-        print(dicts)
         dicts = sorted(dicts.items(), key=lambda x: x[1], reverse=True)
-        res_dic[text_a] = [dicts[0][0], dicts[0][1]]
+        res_dic[text_data[k-1]] = [dicts[0][0], dicts[0][1]]
     assert num_written_lines == num_actual_predict_examples
     return res_dic
 

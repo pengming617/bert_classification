@@ -31,7 +31,7 @@ flags = tf.flags
 
 FLAGS = flags.FLAGS
 
-## Required parameters
+# Required parameters
 flags.DEFINE_string(
     "data_dir", None,
     "The input data dir. Should contain the .tsv files (or other data files) "
@@ -51,7 +51,7 @@ flags.DEFINE_string(
     "output_dir", None,
     "The output directory where the model checkpoints will be written.")
 
-## Other parameters
+# Other parameters
 
 flags.DEFINE_string(
     "init_checkpoint", None,
@@ -63,7 +63,7 @@ flags.DEFINE_bool(
     "models and False for cased models.")
 
 flags.DEFINE_integer(
-    "max_seq_length", 128,
+    "max_seq_length", 300,
     "The maximum total input sequence length after WordPiece tokenization. "
     "Sequences longer than this will be truncated, and sequences shorter "
     "than this will be padded.")
@@ -256,6 +256,24 @@ class XnliProcessor(DataProcessor):
 class SimProcessor(DataProcessor):
   """Processor for the Sim task"""
 
+  # read tsv
+  def get_train_examples(self, data_dir):
+    """See base class."""
+    lines = self._read_tsv(os.path.join(data_dir, "train.tsv"))
+    train_data = []
+    for (i, line) in enumerate(lines):
+      if i == 0:
+        continue
+      if i == 1000:
+          break
+      guid = "train-%d" % (i)
+      text_a = tokenization.convert_to_unicode(line[1])
+      # text_b = tokenization.convert_to_unicode(line[7])
+      label = tokenization.convert_to_unicode(line[0])
+      train_data.append(
+          InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+    return train_data
+
   # read csv
   # def get_train_examples(self, data_dir):
   #   file_path = os.path.join(data_dir, 'train.csv')
@@ -270,21 +288,37 @@ class SimProcessor(DataProcessor):
   #   return train_data
 
   # read txt
-  def get_train_examples(self, data_dir):
-    file_path = os.path.join(data_dir, 'train_sentiment.txt')
-    f = open(file_path, 'r')
-    train_data = []
-    index = 0
-    for line in f.readlines():
-        guid = 'train-%d' % index
-        line = line.replace("\n", "").split("\t")
-        text_a = tokenization.convert_to_unicode(str(line[1]))
-        label = str(line[2])
-        train_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
-        index += 1
-    return train_data
+  # def get_train_examples(self, data_dir):
+  #   file_path = os.path.join(data_dir, 'train_sentiment.txt')
+  #   f = open(file_path, 'r')
+  #   train_data = []
+  #   index = 0
+  #   for line in f.readlines():
+  #       guid = 'train-%d' % index
+  #       line = line.replace("\n", "").split("\t")
+  #       text_a = tokenization.convert_to_unicode(str(line[1]))
+  #       label = str(line[2])
+  #       train_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+  #       index += 1
+  #   return train_data
 
-  # csv
+  # read tsv
+  def get_dev_examples(self, data_dir):
+    """See base class."""
+    lines = self._read_tsv(os.path.join(data_dir, "dev.tsv"))
+    dev_data = []
+    for (i, line) in enumerate(lines):
+        if i == 0:
+            continue
+        guid = "dev-%d" % (i)
+        text_a = tokenization.convert_to_unicode(line[1])
+        # text_b = tokenization.convert_to_unicode(line[7])
+        label = tokenization.convert_to_unicode(line[0])
+        dev_data.append(
+                InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+    return dev_data
+
+  # # read csv
   # def get_dev_examples(self, data_dir):
   #   file_path = os.path.join(data_dir, 'dev.csv')
   #   dev_df = pd.read_csv(file_path, encoding='utf-8')
@@ -297,34 +331,65 @@ class SimProcessor(DataProcessor):
   #       dev_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
   #   return dev_data
 
-  def get_dev_examples(self, data_dir):
-    file_path = os.path.join(data_dir, 'test_sentiment.txt')
-    f = open(file_path, 'r')
-    dev_data = []
-    index = 0
-    for line in f.readlines():
-        guid = 'dev-%d' % index
-        line = line.replace("\n", "").split("\t")
-        text_a = tokenization.convert_to_unicode(str(line[1]))
-        label = str(line[2])
-        dev_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
-        index += 1
-    return dev_data
+  # def get_dev_examples(self, data_dir):
+  #   file_path = os.path.join(data_dir, 'dev_sentiment.txt')
+  #   f = open(file_path, 'r')
+  #   dev_data = []
+  #   index = 0
+  #   for line in f.readlines():
+  #       guid = 'dev-%d' % index
+  #       line = line.replace("\n", "").split("\t")
+  #       text_a = tokenization.convert_to_unicode(str(line[1]))
+  #       label = str(line[2])
+  #       dev_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+  #       index += 1
+  #   return dev_data
 
+  # read tsv
   def get_test_examples(self, data_dir):
-    file_path = os.path.join(data_dir, 'test.csv')
-    test_df = pd.read_csv(file_path, encoding='utf-8')
+    """See base class."""
+    lines = self._read_tsv(os.path.join(data_dir, "test.tsv"))
     test_data = []
-    for index, test in enumerate(test_df.values):
-        guid = 'test-%d' % index
-        text_a = tokenization.convert_to_unicode(str(test[0]))
-        # text_b = tokenization.convert_to_unicode(str(test[1]))
-        label = str(test[1])
-        test_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+    for (i, line) in enumerate(lines):
+        if i == 0:
+            continue
+        guid = "test-%d" % (i)
+        text_a = tokenization.convert_to_unicode(line[1])
+        # text_b = tokenization.convert_to_unicode(line[7])
+        label = tokenization.convert_to_unicode(line[0])
+        test_data.append(
+            InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
     return test_data
 
+  # # read csv
+  # def get_test_examples(self, data_dir):
+  #   file_path = os.path.join(data_dir, 'test.csv')
+  #   test_df = pd.read_csv(file_path, encoding='utf-8')
+  #   test_data = []
+  #   for index, test in enumerate(test_df.values):
+  #       guid = 'test-%d' % index
+  #       text_a = tokenization.convert_to_unicode(str(test[0]))
+  #       # text_b = tokenization.convert_to_unicode(str(test[1]))
+  #       label = str(test[1])
+  #       test_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+  #   return test_data
+
+  # def get_test_examples(self, data_dir):
+  #     file_path = os.path.join(data_dir, 'dev_sentiment.txt')
+  #     f = open(file_path, 'r')
+  #     test_data = []
+  #     index = 0
+  #     for line in f.readlines():
+  #         guid = 'test-%d' % index
+  #         line = line.replace("\n", "").split("\t")
+  #         text_a = tokenization.convert_to_unicode(str(line[1]))
+  #         label = str(line[2])
+  #         test_data.append(InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+  #         index += 1
+  #     return test_data
+
   def get_labels(self):
-    return ['0', '1', '2']
+    return ['0', '1']
 
 
 class MnliProcessor(DataProcessor):

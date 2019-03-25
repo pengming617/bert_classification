@@ -728,7 +728,7 @@ def predicts(text_data):
         for i in range(len(probabilities)):
             dicts[label_list[i]] = probabilities[i]
         dicts = sorted(dicts.items(), key=lambda x: x[1], reverse=True)
-        res_dic[text_data[k-1]] = [dicts[0][0], dicts[0][1]]
+        res_dic[text_data[k]] = [dicts[0][0], dicts[0][1]]
     assert num_written_lines == num_actual_predict_examples
     return res_dic
 

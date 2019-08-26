@@ -264,8 +264,6 @@ class SimProcessor(DataProcessor):
     for (i, line) in enumerate(lines):
       if i == 0:
         continue
-      if i == 1000:
-          break
       guid = "train-%d" % (i)
       text_a = tokenization.convert_to_unicode(line[1])
       # text_b = tokenization.convert_to_unicode(line[7])
